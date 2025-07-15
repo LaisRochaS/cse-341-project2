@@ -14,6 +14,8 @@ app.use('/jobs', jobRoutes);
 app.use('/applicants', applicantRoutes);
 
 
+console.log('Connecting to MongoDB URI:', process.env.MONGODB_URI);
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('MongoDB connected');
