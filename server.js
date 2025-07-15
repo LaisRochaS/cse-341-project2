@@ -1,4 +1,6 @@
-require('dotenv').config();
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const jobRoutes = require('./routes/jobRoutes');
@@ -14,13 +16,28 @@ app.use('/jobs', jobRoutes);
 app.use('/applicants', applicantRoutes);
 
 
-console.log('Connecting to MongoDB URI:', process.env.MONGODB_URI);
+const MongoClient = require('mongodb').MongoClient;
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('MongoDB connected');
-    app.listen(process.env.PORT, () =>
-      console.log(`Server running on port ${process.env.PORT}`)
-    );
-  })
-  .catch((err) => console.error('MongoDB connection error:', err));
+let database;
+
+const initDb = (callback) => {
+    if (database) {
+        console.log('Db is already initialized!');
+        return callback(null, database);
+    }
+    MongoClient.connect(process.env.MONGODB_URL)
+        .then((client) => {
+            database = client;
+            callback(null, database);
+        })
+        .catch((err) => {
+            callback(err);
+        });
+};
+
+const getDatabase = () => {
+    if (!database) {
+        throw Error('Database not initialized');
+    }
+    return database;
+};
