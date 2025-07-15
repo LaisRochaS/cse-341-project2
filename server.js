@@ -1,8 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
-
 const express = require('express');
-const mongoose = require('mongoose');
+const MongoClient = require('mongodb').MongoClient;
 const jobRoutes = require('./routes/jobRoutes');
 const applicantRoutes = require('./routes/applicantRoutes');
 const cors = require('cors');
@@ -16,7 +15,6 @@ app.use('/jobs', jobRoutes);
 app.use('/applicants', applicantRoutes);
 
 
-const MongoClient = require('mongodb').MongoClient;
 
 let database;
 
