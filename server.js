@@ -13,7 +13,9 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'GET, POST, PUT, DELETE, OPTIONS');
     next();
 });
-app.use('/', require ('./routes'));
+const jobRoutes = require('./routes/jobRoutes');
+const applicantRoutes = require('./routes/applicantRoutes');
+
 
 
 mongodb.initDb((err) => {
