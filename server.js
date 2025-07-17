@@ -1,35 +1,26 @@
-require('dotenv').config();
-
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-
-const jobRoutes = require('./routes/jobRoutes');
-const applicantRoutes = require('./routes/applicantRoutes');
-
+const bodyParser = require('body-parser');
+const mongodb = require ('./data/database');
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+const port = process.env.PORT || 3000;
+app.use(bodyParser.json());
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 
+        'Origin, X-Requested-With, Content-Type, Accept, Z-Key'
+    );
+    res.setHeader('Access-Control-Allow-Headers', 'GET, POST, PUT, DELETE, OPTIONS');
+    next();
+});
+app.use('/', require ('./routes'));
 
-app.use('/jobs', jobRoutes);
-app.use('/applicants', applicantRoutes);
 
-const PORT = process.env.PORT || 3000;
-
-
-console.log('Connecting to MongoDB:', process.env.MONGODB_URL);
-
-mongoose.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log('MongoDB connected');
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-})
-.catch(err => {
-  console.error('MongoDB connection error:', err);
+mongodb.initDb((err) => {
+    if (err) {
+        console.log(err);
+    } 
+    else {
+        app.listen(port, () => { console.log(`Database is initialized and Node server is running on port ${port}`)});
+    }
 });
