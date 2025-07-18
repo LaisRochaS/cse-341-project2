@@ -1,34 +1,56 @@
-### Get all users
-GET http://localhost:3000/users
+### Get all applicants
+GET http://localhost:3000/applicants
 
-### Get a single user
-GET http://localhost:3000/users/6871266ea3fe24e1bbbd74d7     
+### Get all jobs
+GET http://localhost:3000/jobs
 
-### Create a new user
-POST http://localhost:3000/users HTTP/1.1
+### Get a single applicant
+GET http://localhost:3000/applicants/68766fad4b8575abe6537f72    
+
+
+### Get a single job
+GET http://localhost:3000/jobs/68767b8dd9a29c62e40531cf
+
+### Create a new applicant
+POST http://localhost:3000/applicants HTTP/1.1
 Content-Type: application/json
 
 {
-  "firstName": "Sarah",
-  "lastName": "Birch",
-  "email": "test@gmail.com",
-  "favoriteColor": "blue",
-  "birthday": "1990-01-01"
+  "name": "Sarah Johnson",
+  "email": "test@test.com",
+  "resumeLink": "https://drive.google.com/sarah-resume",
 }
 
-### PUT contact 
-PUT http://localhost:3000/users/6871266ea3fe24e1bbbd74d7   HTTP/1.1
+### Create a new job
+POST http://localhost:3000/jobs HTTP/1.1  
 Content-Type: application/json
 
 {
-  "firstName": "Ashley",
-  "lastName": "Weaver",
-  "email": "test@gmail.com",
-  "favoriteColor": "green",
-  "birthday": "1990-01-01"
+  "title": "Frontend Developer",
+  "description": "Responsible for building user interfaces.",
+  "location": "New York, NY",
+}
+
+### PUT applicant  
+PUT http://localhost:3000/applicants/68766fad4b8575abe6537f72   HTTP/1.1
+Content-Type: application/json
+
+{
+ "name": "Marcus Reed",
+  "email": "test@test.com",
+  "resumeLink": "https://linkedin.com/in/mreed"
+}
+### PUT job
+PUT http://localhost:3000/jobs/68766fad4b8575abe6537f72 HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Software Engineer",
+  "description": "Develop and maintain web applications.",
+  "location": "Remote",
 }
 
 ### Delete a user
-DELETE http://localhost:3000/users/6871266ea3fe24e1bbbd74d7 
+DELETE http://localhost:3000/applicants/68766fad4b8575abe6537f72
 const express = require('express');
-const usersController = require('../controllers/users');        
+const usersController = require('../controllers/applicantsController', '../controllers/jobController');        
