@@ -1,0 +1,34 @@
+### Get all users
+GET http://localhost:3000/users
+
+### Get a single user
+GET http://localhost:3000/users/6871266ea3fe24e1bbbd74d7     
+
+### Create a new user
+POST http://localhost:3000/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Sarah",
+  "lastName": "Birch",
+  "email": "test@gmail.com",
+  "favoriteColor": "blue",
+  "birthday": "1990-01-01"
+}
+
+### PUT contact 
+PUT http://localhost:3000/users/6871266ea3fe24e1bbbd74d7   HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Ashley",
+  "lastName": "Weaver",
+  "email": "test@gmail.com",
+  "favoriteColor": "green",
+  "birthday": "1990-01-01"
+}
+
+### Delete a user
+DELETE http://localhost:3000/users/6871266ea3fe24e1bbbd74d7 
+const express = require('express');
+const usersController = require('../controllers/users');        
