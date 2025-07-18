@@ -1,85 +1,114 @@
+const mongodb = require('../data/database');
 const { ObjectId } = require('mongodb');
-const { getDb } = require('../data/database');
 
-// GET all applicants
-exports.getAllApplicants = async (req, res) => {
+// Get all applicants
+const getAllApplicants = async (req, res) => {
   try {
-    const db = getDb();
-    const applicants = await db.collection('applicants').find().toArray();
+    const applicants = await mongodb.getDatabase().db().collection('applicants').find().toArray();
     res.status(200).json(applicants);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch applicants' });
+    res.status(500).json({ message: 'Failed to fetch applicants', error: err });
   }
 };
 
-// GET a single applicant by ID
-exports.getApplicantById = async (req, res) => {
+// Get single applicant by ID
+const getApplicantById = async (req, res) => {
+  const id = req.params.id;
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid applicant ID format.' });
+  }
+
   try {
-    const db = getDb();
-    const applicant = await db.collection('applicants').findOne({
-      _id: new ObjectId(req.params.id),
-    });
-
+    const applicant = await mongodb.getDatabase().db().collection('applicants').findOne({ _id: new ObjectId(id) });
     if (!applicant) {
-      return res.status(404).json({ error: 'Applicant not found' });
+      return res.status(404).json({ message: 'Applicant not found.' });
     }
-
     res.status(200).json(applicant);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch applicant' });
+    res.status(500).json({ message: 'Error fetching applicant', error: err });
   }
 };
 
-// POST a new applicant
-exports.createApplicant = async (req, res) => {
-  const { name, email, resumeLink } = req.body;
+// Create new applicant
+const createApplicant = async (req, res) => {
+  const { name, email, appliedDate, resumeLink, jobId } = req.body;
 
-  if (!name || !email) {
-    return res.status(400).json({ error: 'Missing name or email' });
+  if (!name || !email || !jobId) {
+    return res.status(400).json({ message: 'Name, email, and jobId are required.' });
   }
 
-  try {
-    const db = getDb();
-    const result = await db.collection('applicants').insertOne({ name, email, resumeLink });
-    res.status(201).json(result);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to create applicant' });
-  }
-};
+  const newApplicant = {
+    name,
+    email,
+    resumeLink,
+    appliedDate,
+    jobId
+  };
 
-// PUT update applicant
-exports.updateApplicant = async (req, res) => {
   try {
-    const db = getDb();
-    const result = await db.collection('applicants').updateOne(
-      { _id: new ObjectId(req.params.id) },
-      { $set: req.body }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Applicant not found' });
+    const result = await mongodb.getDatabase().db().collection('applicants').insertOne(newApplicant);
+    if (result.acknowledged) {
+      res.status(201).json({ message: 'Applicant created.', id: result.insertedId });
+    } else {
+      res.status(500).json({ message: 'Failed to create applicant.' });
     }
-
-    res.status(200).json(result);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update applicant' });
+    res.status(500).json({ message: 'Database error.', error: err });
   }
 };
 
-// DELETE an applicant
-exports.deleteApplicant = async (req, res) => {
-  try {
-    const db = getDb();
-    const result = await db.collection('applicants').deleteOne({
-      _id: new ObjectId(req.params.id),
-    });
+// Update applicant
+const updateApplicant = async (req, res) => {
+  const id = req.params.id;
+  const { name, email, appliedDate, resumeLink, jobId } = req.body;
 
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid applicant ID format.' });
+  }
+
+  const updatedApplicant = {
+    name,
+    email,
+    resumeLink,
+    appliedDate,
+    jobId
+  };
+
+  try {
+    const result = await mongodb.getDatabase().db().collection('applicants').replaceOne({ _id: new ObjectId(id) }, updatedApplicant);
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: 'Applicant not found or no changes made.' });
+    }
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating applicant', error: err });
+  }
+};
+
+// Delete applicant
+const deleteApplicant = async (req, res) => {
+  const id = req.params.id;
+
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid applicant ID format.' });
+  }
+
+  try {
+    const result = await mongodb.getDatabase().db().collection('applicants').deleteOne({ _id: new ObjectId(id) });
     if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Applicant not found' });
+      return res.status(404).json({ message: 'Applicant not found.' });
     }
-
-    res.status(200).json({ message: 'Applicant deleted successfully' });
+    res.status(204).send();
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete applicant' });
+    res.status(500).json({ message: 'Error deleting applicant', error: err });
   }
+};
+
+module.exports = {
+  getAllApplicants,
+  getApplicantById,
+  createApplicant,
+  updateApplicant,
+  deleteApplicant
 };
