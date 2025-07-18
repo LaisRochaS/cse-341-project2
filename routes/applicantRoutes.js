@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const applicantsController = require('../controllers/applicantsController');
+const applicantController = require('../controllers/applicantController');
 
-router.get('/', applicantsController.getAllApplicants);
-router.get('/:id', applicantsController.getApplicantById);
-router.post('/', applicantsController.createApplicant);
-router.put('/:id', applicantsController.updateApplicant);
-router.delete('/:id', applicantsController.deleteApplicant);
+router.get('/', applicantController.getAllApplicants);
+router.get('/:id', applicantController.getApplicantById);
+router.post('/', applicantController.createApplicant);
+router.put('/:id', applicantController.updateApplicant);
+router.delete('/:id', applicantController.deleteApplicant);
 
 module.exports = router;
 
