@@ -1,40 +1,56 @@
-const Job = require('../models/Job');
+const { ObjectId } = require('mongodb');
+const { getDb } = require('../data/database');
 
-exports.getJobs = async (req, res) => {
+exports.getAllJobs = async (req, res) => {
   try {
-    const jobs = await Job.find();
-    res.json(jobs);
+    const db = getDb();
+    const jobs = await db.collection('jobs').find().toArray();
+    res.status(200).json(jobs);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Failed to fetch jobs' });
+  }
+};
+
+exports.getJobById = async (req, res) => {
+  try {
+    const db = getDb();
+    const job = await db.collection('jobs').findOne({ _id: new ObjectId(req.params.id) });
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    res.status(200).json(job);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch job' });
   }
 };
 
 exports.createJob = async (req, res) => {
   try {
-    const job = new Job(req.body);
-    await job.save();
-    res.status(201).json(job);
+    const db = getDb();
+    const result = await db.collection('jobs').insertOne(req.body);
+    res.status(201).json(result);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ error: 'Failed to create job' });
   }
 };
 
 exports.updateJob = async (req, res) => {
   try {
-    const job = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!job) return res.status(404).json({ error: 'Job not found' });
-    res.json(job);
+    const db = getDb();
+    const result = await db.collection('jobs').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: req.body }
+    );
+    res.status(200).json(result);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ error: 'Failed to update job' });
   }
 };
 
 exports.deleteJob = async (req, res) => {
   try {
-    const job = await Job.findByIdAndDelete(req.params.id);
-    if (!job) return res.status(404).json({ error: 'Job not found' });
-    res.json({ message: 'Job deleted' });
+    const db = getDb();
+    const result = await db.collection('jobs').deleteOne({ _id: new ObjectId(req.params.id) });
+    res.status(200).json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Failed to delete job' });
   }
 };
