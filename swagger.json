@@ -5,7 +5,7 @@
     "description": "API for managing applicants and jobs",
     "version": "1.0.0"
   },
-  "host": "https://cse-341-project2-9u89.onrender.com/",
+  "host": "localhost:3000/applicants",
   "basePath": "/",
   "schemes": [
     "https"
