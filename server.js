@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
+const bodyParser = require('body-parser');
 const express = require('express');
 
 
@@ -11,7 +12,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 
-app.use(express.json());
+app.use(bodyParser.express.json());
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
