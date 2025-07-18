@@ -11,9 +11,9 @@ const initDb = (callback) => {
     return callback(null, db);
   }
 
-  MongoClient.connect(process.env.MONGODB_URL, { useUnifiedTopology: true })
+  MongoClient.connect(process.env.MONGODB_URL)
     .then((client) => {
-      db = client.db(); 
+      db = client.db();
       console.log('MongoDB initialized');
       callback(null, db);
     })
