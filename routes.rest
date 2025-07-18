@@ -41,7 +41,7 @@ Content-Type: application/json
   "resumeLink": "https://linkedin.com/in/mreed"
 }
 ### PUT job
-PUT http://localhost:3000/jobs/68766fad4b8575abe6537f72 HTTP/1.1
+PUT http://localhost:3000/jobs/68767b8dd9a29c62e40531cf HTTP/1.1
 Content-Type: application/json
 
 {
@@ -50,7 +50,13 @@ Content-Type: application/json
   "location": "Remote",
 }
 
-### Delete a user
+### Delete a applicant
+
 DELETE http://localhost:3000/applicants/68766fad4b8575abe6537f72
 const express = require('express');
-const usersController = require('../controllers/applicantsController', '../controllers/jobController');        
+const applicantsController = require('../controllers/applicantsController');        
+
+### Delete a job
+DELETE http://localhost:3000/jobs/68767b8dd9a29c62e40531cf
+const router = express.Router();
+const jobController = require('../controllers/jobController');
