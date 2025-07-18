@@ -5,10 +5,9 @@
     "description": "API for managing applicants and jobs",
     "version": "1.0.0"
   },
-  "host": "localhost:3001",
+  "host": "localhost:3000",
   "basePath": "/",
   "schemes": [
-    "http",
     "https"
   ],
   "paths": {
