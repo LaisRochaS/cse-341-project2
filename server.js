@@ -45,8 +45,8 @@ db.initDb((err) => {
     console.error('Failed to connect to database:', err);
   } else {
     app.listen(port, () => {
-      console.log(`✅ Server is running on http://localhost:${port}`);
-      console.log(`📄 Swagger docs at http://localhost:${port}/api-docs`);
+      console.log(`✅ Server is running on https://localhost:${port}`);
+      console.log(`📄 Swagger docs at https://localhost:${port}/api-docs`);
     });
   }
 });
