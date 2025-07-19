@@ -5,8 +5,8 @@ const doc = {
     title: 'Applicants API',
     description: 'API for managing applicants and jobs',
   },
-  host: 'localhost:3000',
-  schemes: ['https'],
+  host: process.env.SWAGGER_HOST || 'localhost:3000',
+  schemes: ['http', 'https'], 
 };
 
 const outputFile = './swagger.json';
