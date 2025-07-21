@@ -1,42 +1,30 @@
-require('dotenv').config();
+require('dotenv').config(); 
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors'); 
+const mongoose = require('mongoose');
+const bookRoutes = require('./routes/bookRoutes');
+const authorRoutes = require('./routes/authorRoutes');
+const errorHandler = require('./middleware/errorHandler');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
 
-const db = require('./data/database');
-const jobRoutes = require('./routes/jobRoutes');
-const applicantRoutes = require('./routes/applicantRoutes');
 
 const app = express();
-const port = process.env.PORT || 3000;
+app.use(express.json());
+app.use(cors());
 
-app.use(cors()); 
-app.use(bodyParser.json());
-
-
+app.use('/api/books', bookRoutes);
+app.use('/api/authors', authorRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Routes
-app.use('/jobs', jobRoutes);
-app.use('/applicants', applicantRoutes);
 
-// Root route
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Welcome to the Job Applicants API. Visit /api-docs for Swagger documentation.',
-  });
-});
+app.use(errorHandler);
+console.log("Connecting to:", process.env.MONGO_URI);
 
-// Start server
-db.initDb((err) => {
-  if (err) {
-    console.error('❌ Failed to connect to database:', err);
-  } else {
-    app.listen(port, () => {
-      console.log(`✅ Server is running on http://localhost:${port}`);
-      console.log(`📄 Swagger docs at http://localhost:${port}/api-docs`);
-    });
-  }
-});
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('MongoDB connected');
+    app.listen(3000, () => console.log('Server is running on port 3000'));
+  })
+  .catch(err => console.error(err));
