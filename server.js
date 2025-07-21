@@ -4,15 +4,17 @@ const mongoose = require('mongoose');
 const bookRoutes = require('./routes/bookRoutes');
 const authorRoutes = require('./routes/authorRoutes');
 const errorHandler = require('./middleware/errorHandler');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 
+
 const app = express();
-app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json());
 
 app.use('/api/books', bookRoutes);
 app.use('/api/authors', authorRoutes);
