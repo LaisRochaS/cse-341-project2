@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/authorController');
-const validateAuthor = require('../middleware/validateAuthor');
+const authorController = require('../controllers/authorController');
 
-router.get('/', controller.getAll);
-router.post('/', validateAuthor, controller.create);
+router.get('/', authorController.getAllAuthors);
+router.post('/', authorController.createAuthor);
+router.put('/:id', authorController.updateAuthor);
+router.delete('/:id', authorController.deleteAuthor);
 
 module.exports = router;

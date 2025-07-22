@@ -1,37 +1,45 @@
-const Book = require('../models/bookModel');
+const Book = require('../models/Book');
 
-exports.getAll = async (req, res, next) => {
+exports.getAllBooks = async (req, res, next) => {
   try {
-    const books = await Book.find().populate('authorId');
+    const books = await Book.find();
     res.json(books);
   } catch (err) {
     next(err);
   }
 };
 
-exports.create = async (req, res, next) => {
+exports.createBook = async (req, res, next) => {
   try {
-    const book = await Book.create(req.body);
-    res.status(201).json(book);
+    const { title, author } = req.body;
+    if (!title || !author) {
+      return res.status(400).json({ error: 'Title and Author are required.' });
+    }
+
+    const newBook = await Book.create(req.body);
+    res.status(201).json(newBook);
   } catch (err) {
     next(err);
   }
 };
 
-exports.update = async (req, res, next) => {
+exports.updateBook = async (req, res, next) => {
   try {
-    const book = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!book) return res.status(404).json({ error: 'Book not found' });
-    res.json(book);
+    const updated = await Book.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+    if (!updated) return res.status(404).json({ error: 'Book not found' });
+    res.json(updated);
   } catch (err) {
     next(err);
   }
 };
 
-exports.remove = async (req, res, next) => {
+exports.deleteBook = async (req, res, next) => {
   try {
-    const book = await Book.findByIdAndDelete(req.params.id);
-    if (!book) return res.status(404).json({ error: 'Book not found' });
+    const deleted = await Book.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Book not found' });
     res.json({ message: 'Book deleted' });
   } catch (err) {
     next(err);

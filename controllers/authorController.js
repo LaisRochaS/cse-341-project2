@@ -1,6 +1,6 @@
-const Author = require('../models/authorModel');
+const Author = require('../models/Author');
 
-exports.getAll = async (req, res, next) => {
+exports.getAllAuthors = async (req, res, next) => {
   try {
     const authors = await Author.find();
     res.json(authors);
@@ -9,10 +9,38 @@ exports.getAll = async (req, res, next) => {
   }
 };
 
-exports.create = async (req, res, next) => {
+exports.createAuthor = async (req, res, next) => {
   try {
-    const author = await Author.create(req.body);
-    res.status(201).json(author);
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required.' });
+    }
+
+    const newAuthor = await Author.create(req.body);
+    res.status(201).json(newAuthor);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.updateAuthor = async (req, res, next) => {
+  try {
+    const updated = await Author.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+    if (!updated) return res.status(404).json({ error: 'Author not found' });
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteAuthor = async (req, res, next) => {
+  try {
+    const deleted = await Author.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Author not found' });
+    res.json({ message: 'Author deleted' });
   } catch (err) {
     next(err);
   }
