@@ -13,7 +13,9 @@ exports.createBook = async (req, res, next) => {
   try {
     const { title, author } = req.body;
     if (!title || !author) {
-      return res.status(400).json({ error: 'Title and Author are required.' });
+      const error = new Error('Title and Author are required.');
+      error.statusCode = 400;
+      return next(error);
     }
 
     const newBook = await Book.create(req.body);
@@ -25,11 +27,24 @@ exports.createBook = async (req, res, next) => {
 
 exports.updateBook = async (req, res, next) => {
   try {
+    const { title, author } = req.body;
+    if (!title || !author) {
+      const error = new Error('Title and Author are required.');
+      error.statusCode = 400;
+      return next(error);
+    }
+
     const updated = await Book.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
-    if (!updated) return res.status(404).json({ error: 'Book not found' });
+
+    if (!updated) {
+      const error = new Error('Book not found.');
+      error.statusCode = 404;
+      return next(error);
+    }
+
     res.json(updated);
   } catch (err) {
     next(err);
@@ -39,7 +54,11 @@ exports.updateBook = async (req, res, next) => {
 exports.deleteBook = async (req, res, next) => {
   try {
     const deleted = await Book.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ error: 'Book not found' });
+    if (!deleted) {
+      const error = new Error('Book not found.');
+      error.statusCode = 404;
+      return next(error);
+    }
     res.json({ message: 'Book deleted' });
   } catch (err) {
     next(err);

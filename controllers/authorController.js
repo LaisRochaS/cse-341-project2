@@ -13,7 +13,9 @@ exports.createAuthor = async (req, res, next) => {
   try {
     const { name } = req.body;
     if (!name) {
-      return res.status(400).json({ error: 'Name is required.' });
+      const error = new Error('Name is required.');
+      error.statusCode = 400;
+      return next(error);
     }
 
     const newAuthor = await Author.create(req.body);
@@ -25,11 +27,24 @@ exports.createAuthor = async (req, res, next) => {
 
 exports.updateAuthor = async (req, res, next) => {
   try {
+    const { name } = req.body;
+    if (!name) {
+      const error = new Error('Name is required.');
+      error.statusCode = 400;
+      return next(error);
+    }
+
     const updated = await Author.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
-    if (!updated) return res.status(404).json({ error: 'Author not found' });
+
+    if (!updated) {
+      const error = new Error('Author not found.');
+      error.statusCode = 404;
+      return next(error);
+    }
+
     res.json(updated);
   } catch (err) {
     next(err);
@@ -39,7 +54,11 @@ exports.updateAuthor = async (req, res, next) => {
 exports.deleteAuthor = async (req, res, next) => {
   try {
     const deleted = await Author.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ error: 'Author not found' });
+    if (!deleted) {
+      const error = new Error('Author not found.');
+      error.statusCode = 404;
+      return next(error);
+    }
     res.json({ message: 'Author deleted' });
   } catch (err) {
     next(err);
