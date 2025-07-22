@@ -33,8 +33,7 @@
               "example": {
                 "name": "Antoine de Saint-Exupéry",
                 "bio": "French writer and aviator",
-                "birthDate": "1900-06-29",
-                "nationality": "French"
+                "birthDate": "1900-06-29"
               }
             }
           }
@@ -114,12 +113,12 @@
             "application/json": {
               "schema": { "$ref": "#/components/schemas/Book" },
               "example": {
-                "title": "The Little Prince",
-                "author": "Antoine de Saint-Exupéry",
-                "genre": "Fantasy",
-                "publishedYear": 1943,
-                "pages": 694,
-                "price": 24.95,
+                "title": { "type": "string" },
+                "author": { "type": "string" },
+                "genre": { "type": "string" },
+                "publishedYear": { "type": "number" },
+                "pages": { "type": "number" },
+                "price": { "type": "number" },
                 "inStock": true,
                 "authorId": "687e71b11ae3c121690b5020"
               }
@@ -180,24 +179,23 @@
         "type": "object",
         "required": ["name"],
         "properties": {
-          "name": { "type": "string", "example": "Antoine de Saint-Exupéry" },
-          "bio": { "type": "string", "example": "French writer and aviator" },
-          "birthDate": { "type": "string", "format": "date", "example": "1900-06-29" },
-          "nationality": { "type": "string", "example": "French" }
+          "name": { "type": "string"},
+          "bio": { "type": "string" },
+          "birthDate": { "type": "string", "format": "date", "example": "1900-06-29" }
         }
       },
       "Book": {
         "type": "object",
         "required": ["title", "author", "authorId"],
         "properties": {
-          "title": { "type": "string", "example": "The Little Prince" },
-          "author": { "type": "string", "example": "Antoine de Saint-Exupéry" },
-          "genre": { "type": "string", "example": "Fantasy" },
-          "publishedYear": { "type": "integer", "example": 1943 },
-          "pages": { "type": "integer", "example": 694 },
-          "price": { "type": "number", "format": "float", "example": 24.95 },
+          "title": { "type": "string" },
+          "author": { "type": "string" },
+          "genre": { "type": "string" },
+          "publishedYear": { "type": "integer"},
+          "pages": { "type": "integer" },
+          "price": { "type": "number", "format": "float" },
           "inStock": { "type": "boolean", "example": true },
-          "authorId": { "type": "string", "example": "687e71b11ae3c121690b5020" }
+          "authorId": { "type": "string", "format": "objectId", "description": "ID of the author" }
         }
       }
     }
