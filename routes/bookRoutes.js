@@ -2,30 +2,17 @@ const express = require('express');
 const router = express.Router();
 const bookController = require('../controllers/bookController');
 
-/**
- * @swagger
- * /api/books:
- *   get:
- *     summary: Get all books
- *     responses:
- *       200:
- *         description: Success
- */
+// GET all books
 router.get('/', bookController.getAllBooks);
 
-/**
- * @swagger
- * /api/books:
- *   post:
- *     summary: Create a new book
- *     requestBody:
- *       required: true
- *     responses:
- *       201:
- *         description: Created
- */
+// POST create a new book
 router.post('/', bookController.createBook);
 
-module.exports = router;
+// PUT update a book by ID
+router.put('/:id', bookController.updateBook);
 
+// DELETE delete a book by ID
+router.delete('/:id', bookController.deleteBook);
+
+module.exports = router;
 
