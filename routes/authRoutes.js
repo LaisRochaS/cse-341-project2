@@ -1,25 +1,26 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const ensureAuthenticated = require('../middleware/auth');
 
-// Start GitHub OAuth
 router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
 
-// GitHub OAuth callback
-router.get('/auth/github/callback',
-  passport.authenticate('github', { failureRedirect: '/' }),
-  (req, res) => res.redirect('/profile')
-);
+router.get('/auth/github/callback', passport.authenticate('github', {
+  failureRedirect: '/login-failure',
+  successRedirect: '/login-success'
+}));
 
-// Logout
-router.get('/logout', (req, res) => {
-  req.logout(() => res.redirect('/'));
+router.get('/login-success', (req, res) => {
+  res.json({ message: 'Login successful', user: req.user });
 });
 
-// Protected profile route
-router.get('/profile', ensureAuthenticated, (req, res) => {
-  res.json({ user: req.user });
+router.get('/login-failure', (req, res) => {
+  res.status(401).json({ message: 'Login failed' });
+});
+
+router.get('/logout', (req, res) => {
+  req.logout(() => {
+    res.json({ message: 'Logged out' });
+  });
 });
 
 module.exports = router;
