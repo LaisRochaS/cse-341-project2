@@ -18,7 +18,7 @@ app.use(express.json());
 
 // Session + Passport
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.GITHUB_CLIENT_SECRET,
   resave: false,
   saveUninitialized: false
 }));
