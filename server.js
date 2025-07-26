@@ -1,32 +1,57 @@
-require('dotenv').config(); 
-
+require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
+const passport = require('passport');
+const mongoose = require('mongoose');
+require('./config/passport'); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Connect to MongoDB 
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log(' MongoDB connected'))
+  .catch((err) => console.error('MongoDB connection error:', err));
 
-// Session setup
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'fallback_secret_key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } 
-  })
-);
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Sessions
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'fallback_secret',
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.get('/', (req, res) => {
-  res.send('Hello from Express server!');
+  res.send('Home Page');
 });
 
-// Start server
+// GitHub auth routes
+app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+app.get('/auth/github/callback',
+  passport.authenticate('github', {
+    failureRedirect: '/',
+    successRedirect: '/profile'
+  })
+);
+
+app.get('/profile', (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/');
+  }
+  res.send(`Logged in as ${req.user.username}`);
+});
+
 app.listen(PORT, () => {
   console.log(` Server running on http://localhost:${PORT}`);
 });
