@@ -3,6 +3,8 @@ const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const cors = require('cors'); // ✅ Import CORS
+
 require('./auth/passport');
 
 const bookRoutes = require('./routes/bookRoutes');
@@ -14,6 +16,13 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDoc = require('./swagger.json');
 
 const app = express();
+
+// ✅ CORS Middleware
+app.use(cors({
+  origin: 'https://cse-341-project2-9u89.onrender.com/',
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Session + Passport
