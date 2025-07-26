@@ -1,53 +1,37 @@
 const express = require('express');
-const router = express.Router();
 const Book = require('../models/Book');
-
-const { ensureAuthenticated } = require('./routes/authRoutes'); 
-
-app.use('/api/books', ensureAuthenticated, bookRoutes);
-
+const router = express.Router();
 
 // GET all books
 router.get('/', async (req, res) => {
-  try {
-    const books = await Book.find();
-    res.status(200).json(books);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const books = await Book.find();
+  res.json(books);
 });
 
-// POST book
+// POST a new book
 router.post('/', async (req, res) => {
   try {
-    const book = new Book(req.body);
-    await book.save();
+    const book = await Book.create(req.body);
     res.status(201).json(book);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ message: err.message });
   }
 });
 
-// PUT book
+// PUT (update) book
 router.put('/:id', async (req, res) => {
   try {
     const updated = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(updated);
+    res.json(updated);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ message: err.message });
   }
 });
 
 // DELETE book
 router.delete('/:id', async (req, res) => {
-  try {
-    await Book.findByIdAndDelete(req.params.id);
-    res.sendStatus(204);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  await Book.findByIdAndDelete(req.params.id);
+  res.sendStatus(204);
 });
 
 module.exports = router;
-
-
