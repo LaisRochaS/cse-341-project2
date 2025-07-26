@@ -1,89 +1,59 @@
 const express = require('express');
 const router = express.Router();
-const authorController = require('../controllers/authorController');
+const Author = require('../models/Author');
 
-/**
- * @swagger
- * /api/authors:
- *   get:
- *     summary: Get all authors
- *     responses:
- *       200:
- *         description: List of authors
- */
-router.get('/', authorController.getAllAuthors);
+// GET all authors
+router.get('/', async (req, res) => {
+  try {
+    const authors = await Author.find();
+    res.status(200).json(authors);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-/**
- * @swagger
- * /api/authors:
- *   post:
- *     summary: Create a new author
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *             properties:
- *               name:
- *                 type: string
- *               birthYear:
- *                 type: integer
- *               nationality:
- *                 type: string
- *     responses:
- *       201:
- *         description: Author created
- */
-router.post('/', authorController.createAuthor);
+// GET one author
+router.get('/:id', async (req, res) => {
+  try {
+    const author = await Author.findById(req.params.id);
+    if (!author) return res.status(404).json({ message: 'Author not found' });
+    res.status(200).json(author);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-/**
- * @swagger
- * /api/authors/{id}:
- *   put:
- *     summary: Update an author by ID
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               birthYear:
- *                 type: integer
- *               nationality:
- *                 type: string
- *     responses:
- *       200:
- *         description: Author updated
- */
-router.put('/:id', authorController.updateAuthor);
+// POST new author
+router.post('/', async (req, res) => {
+  try {
+    const author = new Author(req.body);
+    await author.save();
+    res.status(201).json(author);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 
-/**
- * @swagger
- * /api/authors/{id}:
- *   delete:
- *     summary: Delete an author by ID
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Author deleted
- */
-router.delete('/:id', authorController.deleteAuthor);
+// PUT update author
+router.put('/:id', async (req, res) => {
+  try {
+    const updated = await Author.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updated) return res.status(404).json({ message: 'Author not found' });
+    res.status(200).json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// DELETE author
+router.delete('/:id', async (req, res) => {
+  try {
+    const deleted = await Author.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Author not found' });
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
