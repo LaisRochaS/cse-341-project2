@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  githubId: String,
-  username: String
+  githubId: { type: String, required: true, unique: true },
+  username: { type: String }
 });
 
 module.exports = mongoose.model('User', userSchema);
+
