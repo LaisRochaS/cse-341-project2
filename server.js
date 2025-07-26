@@ -3,7 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
 const mongoose = require('mongoose');
-require('./config/passport'); 
+require('./auth/passport'); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
