@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Author = require('../models/Author');
 
+const { ensureAuthenticated } = require('./routes/authRoutes');
+
+app.use('/api/authors', ensureAuthenticated, authorRoutes);
+
+
 // GET all authors
 router.get('/', async (req, res) => {
   try {

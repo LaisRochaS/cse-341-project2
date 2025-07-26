@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Book = require('../models/Book');
 
+const { ensureAuthenticated } = require('./routes/authRoutes'); 
+
+app.use('/api/books', ensureAuthenticated, bookRoutes);
+
+
 // GET all books
 router.get('/', async (req, res) => {
   try {
