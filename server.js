@@ -6,8 +6,8 @@ const passport = require('passport');
 const authRoutes = require('./routes/authRoutes'); // Your authentication routes
 const bookRoutes = require('./routes/bookRoutes'); // Your book routes
 const authorRoutes = require('./routes/authorRoutes'); // Your author routes
+const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocs = require('./swagger'); // Your Swagger configuration
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
 app.use(session({
-    secret: 'mySuperSecretKey123!', // Change this to a secure random string
+    secret: 'mySuperSecretKey123!', 
     resave: false,
     saveUninitialized: true,
 }));
@@ -38,11 +38,31 @@ mongoose.connect('mongodb://localhost:27017/your_database_name', {
 // Passport configuration for OAuth
 require('./config/passport')(passport); // Passport configuration file
 
+// Swagger configuration
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Books and Authors API',
+            version: '1.0.0',
+            description: 'API documentation for the Books and Authors application',
+        },
+        servers: [
+            {
+                url: `http://localhost:${PORT}`,
+            },
+        ],
+    },
+    apis: ['./routes/*.js'], // Path to the API docs
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/books', bookRoutes);
-app.use('/api/authors', authorRoutes);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use('/api/book', bookRoutes);
+app.use('/api/author', authorRoutes);
 
 // Start the server
 app.listen(PORT, () => {
