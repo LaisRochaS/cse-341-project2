@@ -1,7 +1,6 @@
-// auth.js
 const passport = require('passport');
 const { Strategy, ExtractJwt } = require('passport-jwt');
-const User = require('./models/User');
+const User = require('./models/User'); // Adjust the path to your User model
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
