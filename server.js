@@ -61,8 +61,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/book', bookRoutes);
-app.use('/api/author', authorRoutes);
+app.use('/api/books', bookRoutes);
+app.use('/api/authors', authorRoutes);
 
 // Start the server
 app.listen(PORT, () => {
