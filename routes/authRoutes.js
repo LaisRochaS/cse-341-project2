@@ -1,26 +1,27 @@
 const express = require('express');
-const passport = require('passport');
-const router = express.Router();
+   const User = require('../models/User'); // Adjust the path to your User model
+   const bcrypt = require('bcryptjs');
+   const router = express.Router();
 
+   // Register route
+   router.post('/register', async (req, res) => {
+       const { username, password } = req.body; // Ensure password is included
+       console.log("Request Body:", req.body); // Log the request body for debugging
 
-// Auth with GitHub
-router.get('/github', passport.authenticate('github'));
+       if (!username || !password) {
+           return res.status(400).json({ message: 'Username and password are required' });
+       }
 
-// Callback route for GitHub to redirect to
-router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
-    // Successful authentication, redirect home or to a protected route.
-    res.redirect('/'); // Change this to your desired route
-});
+       try {
+           const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+           const user = new User({ username, password: hashedPassword }); // Ensure password is set
+           await user.save();
+           res.status(201).json({ message: 'User  registered successfully', user });
+       } catch (error) {
+           console.error("Error saving user:", error); // Log the error for debugging
+           res.status(500).json({ message: error.message });
+       }
+   });
 
-// Logout route
-router.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/');
-});
-
-// Get current user
-router.get('/current_user', (req, res) => {
-    res.send(req.user);
-});
-
-module.exports = router;
+   module.exports = router;
+   
