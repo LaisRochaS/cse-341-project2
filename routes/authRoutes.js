@@ -1,26 +1,27 @@
+// routes/auth.js
 const express = require('express');
 const passport = require('passport');
+
 const router = express.Router();
 
-router.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+// @desc    Auth with GitHub
+// @route   GET /api/auth/github
+router.get('/github', passport.authenticate('github'));
 
-router.get('/auth/github/callback', passport.authenticate('github', {
-  failureRedirect: '/login-failure',
-  successRedirect: '/login-success'
-}));
-
-router.get('/login-success', (req, res) => {
-  res.json({ message: 'Login successful', user: req.user });
+// @desc    GitHub auth callback
+// @route   GET /api/auth/github/callback
+router.get('/github/callback', passport.authenticate('github', {
+    failureRedirect: '/login',
+}), (req, res) => {
+    // Successful authentication, redirect home or send a token
+    res.redirect('/'); // Redirect to your desired route
 });
 
-router.get('/login-failure', (req, res) => {
-  res.status(401).json({ message: 'Login failed' });
-});
-
+// @desc    Logout user
+// @route   GET /api/auth/logout
 router.get('/logout', (req, res) => {
-  req.logout(() => {
-    res.json({ message: 'Logged out' });
-  });
+    req.logout();
+    res.redirect('/');
 });
 
 module.exports = router;
