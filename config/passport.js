@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GitHubStrategy = require('passport-github').Strategy;
-const User = require('./models/User'); // Adjust the path to your User model
+const User = require('../models/User');
 require('dotenv').config();
 
 passport.use(new GitHubStrategy({
