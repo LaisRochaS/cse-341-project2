@@ -7,7 +7,7 @@ const authorsRoutes = require("./routes/authors");
 const booksRoutes = require("./routes/books");
 const authRoutes = require("./routes/authRoutes");
 const setupSwagger = require("./swagger");
-require('./config/passport'); // Include the passport setup
+require('./config/passport');
 
 const app = express();
 const PORT = 3000;
