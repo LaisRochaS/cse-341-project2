@@ -1,36 +1,45 @@
+// auth.js
 const passport = require('passport');
-const GitHubStrategy = require('passport-github2').Strategy;
+const { Strategy, ExtractJwt } = require('passport-jwt');
+const User = require('./models/User');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
-passport.serializeUser((user, done) => {
-  done(null, user); 
-});
+// JWT Strategy
+const opts = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.JWT_SECRET,
+};
 
-passport.deserializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: '/auth/github/callback',
-    },
-    (accessToken, refreshToken, profile, done) => {
-     
-      return done(null, profile);
+passport.use(new Strategy(opts, async (jwt_payload, done) => {
+    try {
+        const user = await User.findById(jwt_payload.id);
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+        }
+    } catch (error) {
+        return done(error, false);
     }
-  )
-);
+}));
 
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated && req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ message: 'Unauthorized' });
-}
+// Register User
+const registerUser  = async (username, password) => {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ username, password: hashedPassword });
+    return await user.save();
+};
 
-module.exports = { isAuthenticated };
+// Login User
+const loginUser  = async (username, password) => {
+    const user = await User.findOne({ username });
+    if (user && (await bcrypt.compare(password, user.password))) {
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        return { token };
+    }
+    throw new Error('Invalid credentials');
+};
 
-
-module.exports = { passport, isAuthenticated };
+module.exports = { registerUser , loginUser , passport };

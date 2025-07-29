@@ -1,27 +1,25 @@
-// routes/auth.js
 const express = require('express');
 const passport = require('passport');
-
 const router = express.Router();
 
-// @desc    Auth with GitHub
-// @route   GET /api/auth/github
+// Auth with GitHub
 router.get('/github', passport.authenticate('github'));
 
-// @desc    GitHub auth callback
-// @route   GET /api/auth/github/callback
-router.get('/github/callback', passport.authenticate('github', {
-    failureRedirect: '/login',
-}), (req, res) => {
-    // Successful authentication, redirect home or send a token
-    res.redirect('/'); // Redirect to your desired route
+// Callback route for GitHub to redirect to
+router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
+    // Successful authentication, redirect home or to a protected route.
+    res.redirect('/'); // Change this to your desired route
 });
 
-// @desc    Logout user
-// @route   GET /api/auth/logout
+// Logout route
 router.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
+});
+
+// Get current user
+router.get('/current_user', (req, res) => {
+    res.send(req.user);
 });
 
 module.exports = router;
