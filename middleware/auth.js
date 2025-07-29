@@ -24,12 +24,13 @@ passport.use(new Strategy(opts, async (jwt_payload, done) => {
     }
 }));
 
-// Register User
+
 const registerUser  = async (username, password) => {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ username, password: hashedPassword });
-    return await user.save();
-};
+       const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
+       const user = new User({ username, password: hashedPassword }); // Ensure password is set
+       return await user.save();
+ };
+   
 
 // Login User
 const loginUser  = async (username, password) => {
